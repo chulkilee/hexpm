@@ -58,8 +58,20 @@ defmodule HexpmWeb.API.OwnerController do
             |> send_resp(204, "")
 
           {:error, :not_member} ->
-            errors = %{"username" => "cannot add owner that is not a member of the organization"}
-            validation_failed(conn, errors)
+            validation_failed(conn, %{
+              "username" => "cannot add owner that is not a member of the organization"
+            })
+
+          {:error, :not_organization_transfer} ->
+            validation_failed(conn, %{
+              "username" =>
+                "organization ownership can only be transfered, removing all existing owners"
+            })
+
+          {:error, :organization_level} ->
+            validation_failed(conn, %{
+              "level" => "ownership level is required to be \"full\" for organization ownership"
+            })
 
           {:error, changeset} ->
             validation_failed(conn, changeset)
